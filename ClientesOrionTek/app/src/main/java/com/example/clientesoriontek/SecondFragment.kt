@@ -59,7 +59,10 @@ class SecondFragment : Fragment() {
     }
 
     private fun setupRecyclerView() {
-        addressAdapter = AddressAdapter()
+        addressAdapter = AddressAdapter(
+            onEditClicked = { address -> showEditAddressDialog(address) },
+            onDeleteClicked = { address -> showDeleteConfirmationDialog(address) }
+        )
         binding.recyclerViewAddresses.apply {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = addressAdapter
@@ -77,18 +80,20 @@ class SecondFragment : Fragment() {
         }
 
         viewModel.getAddressesForClient(clientId).observe(viewLifecycleOwner) { addresses ->
-            tempAddressList.clear()
-            tempAddressList.addAll(addresses)
-            addressAdapter.submitList(tempAddressList.toList())
+            if (args.clientId != -1L) {
+                tempAddressList.clear()
+                tempAddressList.addAll(addresses)
+                addressAdapter.submitList(tempAddressList.toList())
+            }
         }
     }
 
     private fun showAddAddressDialog() {
         val dialogBinding = DialogAddAddressBinding.inflate(layoutInflater)
         MaterialAlertDialogBuilder(requireContext())
-            .setTitle("Agregar Dirección")
+            .setTitle(getString(R.string.add_address))
             .setView(dialogBinding.root)
-            .setPositiveButton("Agregar") { _, _ ->
+            .setPositiveButton(getString(R.string.add)) { _, _ ->
                 val street = dialogBinding.editTextStreet.text.toString()
                 val city = dialogBinding.editTextCity.text.toString()
                 val sector = dialogBinding.editTextSector.text.toString()
@@ -110,10 +115,67 @@ class SecondFragment : Fragment() {
                         addressAdapter.submitList(tempAddressList.toList())
                     }
                 } else {
-                    Toast.makeText(requireContext(), "Calle y Ciudad son obligatorios", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), getString(R.string.address_required), Toast.LENGTH_SHORT).show()
                 }
             }
-            .setNegativeButton("Cancelar", null)
+            .setNegativeButton(getString(R.string.cancel), null)
+            .show()
+    }
+
+    private fun showEditAddressDialog(address: Address) {
+        val dialogBinding = DialogAddAddressBinding.inflate(layoutInflater)
+        dialogBinding.editTextStreet.setText(address.street)
+        dialogBinding.editTextCity.setText(address.city)
+        dialogBinding.editTextSector.setText(address.sector)
+        dialogBinding.editTextHouseNumber.setText(address.houseNumber)
+
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(getString(R.string.edit_address))
+            .setView(dialogBinding.root)
+            .setPositiveButton(getString(R.string.save)) { _, _ ->
+                val street = dialogBinding.editTextStreet.text.toString()
+                val city = dialogBinding.editTextCity.text.toString()
+                val sector = dialogBinding.editTextSector.text.toString()
+                val houseNumber = dialogBinding.editTextHouseNumber.text.toString()
+
+                if (street.isNotBlank() && city.isNotBlank()) {
+                    val updatedAddress = address.copy(
+                        street = street,
+                        city = city,
+                        sector = sector,
+                        houseNumber = houseNumber
+                    )
+                    
+                    if (args.clientId != -1L) {
+                        viewModel.updateAddress(updatedAddress)
+                    } else {
+                        val index = tempAddressList.indexOf(address)
+                        if (index != -1) {
+                            tempAddressList[index] = updatedAddress
+                            addressAdapter.submitList(tempAddressList.toList())
+                        }
+                    }
+                } else {
+                    Toast.makeText(requireContext(), getString(R.string.address_required), Toast.LENGTH_SHORT).show()
+                }
+            }
+            .setNegativeButton(getString(R.string.cancel), null)
+            .show()
+    }
+
+    private fun showDeleteConfirmationDialog(address: Address) {
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(getString(R.string.delete_address))
+            .setMessage(getString(R.string.confirm_delete_address))
+            .setPositiveButton(getString(R.string.delete)) { _, _ ->
+                if (args.clientId != -1L) {
+                    viewModel.deleteAddress(address)
+                } else {
+                    tempAddressList.remove(address)
+                    addressAdapter.submitList(tempAddressList.toList())
+                }
+            }
+            .setNegativeButton(getString(R.string.cancel), null)
             .show()
     }
 
@@ -124,7 +186,7 @@ class SecondFragment : Fragment() {
         val email = binding.editTextEmail.text.toString()
 
         if (firstName.isBlank() || lastName.isBlank()) {
-            Toast.makeText(requireContext(), "Nombre y Apellido son obligatorios", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), getString(R.string.client_required), Toast.LENGTH_SHORT).show()
             return
         }
 
@@ -138,11 +200,9 @@ class SecondFragment : Fragment() {
 
         if (args.clientId == -1L) {
             viewModel.insertClient(client) { newClientId ->
-                // Guardar las direcciones temporales con el nuevo ID
                 tempAddressList.forEach { address ->
                     viewModel.insertAddress(address.copy(clientId = newClientId))
                 }
-                // Usar viewLifecycleOwner.lifecycleScope o similar sería mejor, pero esto funciona para navegar de vuelta
                 requireActivity().runOnUiThread {
                     findNavController().navigateUp()
                 }

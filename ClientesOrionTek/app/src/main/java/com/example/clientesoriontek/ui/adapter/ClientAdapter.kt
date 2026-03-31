@@ -8,8 +8,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.clientesoriontek.data.local.entity.Client
 import com.example.clientesoriontek.databinding.ItemClientBinding
 
-class ClientAdapter(private val onItemClicked: (Client) -> Unit) :
-    ListAdapter<Client, ClientAdapter.ClientViewHolder>(DiffCallback) {
+class ClientAdapter(
+    private val onItemClicked: (Client) -> Unit,
+    private val onDeleteClicked: (Client) -> Unit
+) : ListAdapter<Client, ClientAdapter.ClientViewHolder>(DiffCallback) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ClientViewHolder {
         return ClientViewHolder(
@@ -26,10 +28,13 @@ class ClientAdapter(private val onItemClicked: (Client) -> Unit) :
         holder.itemView.setOnClickListener {
             onItemClicked(current)
         }
+        holder.binding.buttonDeleteClient.setOnClickListener {
+            onDeleteClicked(current)
+        }
         holder.bind(current)
     }
 
-    class ClientViewHolder(private var binding: ItemClientBinding) :
+    class ClientViewHolder(val binding: ItemClientBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(client: Client) {

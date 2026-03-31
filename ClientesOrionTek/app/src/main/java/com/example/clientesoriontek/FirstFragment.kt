@@ -11,6 +11,7 @@ import com.example.clientesoriontek.databinding.FragmentFirstBinding
 import com.example.clientesoriontek.ui.adapter.ClientAdapter
 import com.example.clientesoriontek.ui.viewmodel.ClientViewModel
 import com.example.clientesoriontek.ui.viewmodel.ClientViewModelFactory
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 class FirstFragment : Fragment() {
@@ -33,16 +34,32 @@ class FirstFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val adapter = ClientAdapter { client ->
-            val action = FirstFragmentDirections.actionFirstFragmentToSecondFragment(client.id)
-            findNavController().navigate(action)
-        }
+        val adapter = ClientAdapter(
+            onItemClicked = { client ->
+                val action = FirstFragmentDirections.actionFirstFragmentToSecondFragment(client.id)
+                findNavController().navigate(action)
+            },
+            onDeleteClicked = { client ->
+                showDeleteConfirmationDialog(client)
+            }
+        )
         binding.recyclerViewClients.adapter = adapter
 
         viewModel.allClients.observe(viewLifecycleOwner) { clients ->
             adapter.submitList(clients)
             binding.textViewEmpty.visibility = if (clients.isEmpty()) View.VISIBLE else View.GONE
         }
+    }
+
+    private fun showDeleteConfirmationDialog(client: com.example.clientesoriontek.data.local.entity.Client) {
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(getString(R.string.delete_client))
+            .setMessage(getString(R.string.confirm_delete_client, client.firstName, client.lastName))
+            .setPositiveButton(getString(R.string.delete)) { _, _ ->
+                viewModel.deleteClient(client)
+            }
+            .setNegativeButton(getString(R.string.cancel), null)
+            .show()
     }
 
     override fun onResume() {

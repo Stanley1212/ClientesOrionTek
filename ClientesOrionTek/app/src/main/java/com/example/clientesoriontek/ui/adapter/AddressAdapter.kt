@@ -8,7 +8,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.clientesoriontek.data.local.entity.Address
 import com.example.clientesoriontek.databinding.ItemAddressBinding
 
-class AddressAdapter : ListAdapter<Address, AddressAdapter.AddressViewHolder>(DiffCallback) {
+class AddressAdapter(
+    private val onEditClicked: (Address) -> Unit,
+    private val onDeleteClicked: (Address) -> Unit
+) : ListAdapter<Address, AddressAdapter.AddressViewHolder>(DiffCallback) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AddressViewHolder {
         return AddressViewHolder(
@@ -22,10 +25,16 @@ class AddressAdapter : ListAdapter<Address, AddressAdapter.AddressViewHolder>(Di
 
     override fun onBindViewHolder(holder: AddressViewHolder, position: Int) {
         val current = getItem(position)
+        holder.binding.buttonEditAddress.setOnClickListener {
+            onEditClicked(current)
+        }
+        holder.binding.buttonDeleteAddress.setOnClickListener {
+            onDeleteClicked(current)
+        }
         holder.bind(current)
     }
 
-    class AddressViewHolder(private var binding: ItemAddressBinding) :
+    class AddressViewHolder(val binding: ItemAddressBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(address: Address) {
@@ -37,11 +46,11 @@ class AddressAdapter : ListAdapter<Address, AddressAdapter.AddressViewHolder>(Di
     companion object {
         private val DiffCallback = object : DiffUtil.ItemCallback<Address>() {
             override fun areItemsTheSame(oldItem: Address, newItem: Address): Boolean {
-                return oldItem === newItem
+                return oldItem.addressId == newItem.addressId
             }
 
             override fun areContentsTheSame(oldItem: Address, newItem: Address): Boolean {
-                return oldItem.street == newItem.street && oldItem.city == newItem.city
+                return oldItem == newItem
             }
         }
     }

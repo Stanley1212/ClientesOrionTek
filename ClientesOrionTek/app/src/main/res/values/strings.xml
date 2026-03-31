@@ -2,11 +2,21 @@
     <string name="app_name">ClientesOrionTek</string>
     <string name="action_settings">Settings</string>
     <!-- Strings used for fragments for navigation -->
-    <string name="first_fragment_label">First Fragment</string>
-    <string name="second_fragment_label">Second Fragment</string>
-    <string name="next">Next</string>
-    <string name="previous">Previous</string>
+    <string name="first_fragment_label">Lista de Clientes</string>
+    <string name="second_fragment_label">Detalle del Cliente</string>
+    <string name="next">Siguiente</string>
+    <string name="previous">Anterior</string>
 
-    <string name="hello_first_fragment">Hello first fragment</string>
-    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
+    <string name="delete_client">Eliminar Cliente</string>
+    <string name="edit_address">Editar Dirección</string>
+    <string name="delete_address">Eliminar Dirección</string>
+    <string name="confirm_delete_client">¿Estás seguro de que deseas eliminar a %1$s %2$s?</string>
+    <string name="confirm_delete_address">¿Estás seguro de que deseas eliminar esta dirección?</string>
+    <string name="cancel">Cancelar</string>
+    <string name="delete">Eliminar</string>
+    <string name="save">Guardar</string>
+    <string name="add">Agregar</string>
+    <string name="add_address">Agregar Dirección</string>
+    <string name="address_required">Calle y Ciudad son obligatorios</string>
+    <string name="client_required">Nombre y Apellido son obligatorios</string>
 </resources>
