@@ -1,0 +1,101 @@
+@ClientesOrionTekBackEnd_HostAddress = http://localhost:5049
+
+GET {{ClientesOrionTekBackEnd_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
+
+# Clients - list
+GET {{ClientesOrionTekBackEnd_HostAddress}}/api/clients
+Accept: application/json
+
+###
+
+# Clients - get by id
+GET {{ClientesOrionTekBackEnd_HostAddress}}/api/clients/1
+Accept: application/json
+
+###
+
+# Clients - create
+POST {{ClientesOrionTekBackEnd_HostAddress}}/api/clients
+Accept: application/json
+Content-Type: application/json
+
+{
+  "FirstName": "Juan",
+  "LastName": "Perez",
+  "Phone": "555-1234",
+  "Email": "juan.perez@example.com"
+}
+###
+
+# Clients - update
+PUT {{ClientesOrionTekBackEnd_HostAddress}}/api/clients/1
+Accept: application/json
+Content-Type: application/json
+
+{
+  "FirstName": "Juan Updated",
+  "LastName": "Perez",
+  "Phone": "555-5678",
+  "Email": "juan.updated@example.com"
+}
+###
+
+# Clients - delete
+DELETE {{ClientesOrionTekBackEnd_HostAddress}}/api/clients/1
+Accept: application/json
+
+###
+
+# Addresses - list
+GET {{ClientesOrionTekBackEnd_HostAddress}}/api/addresses
+Accept: application/json
+
+###
+
+# Addresses - get by id
+GET {{ClientesOrionTekBackEnd_HostAddress}}/api/addresses/1
+Accept: application/json
+
+###
+
+# Addresses - get by client id
+GET {{ClientesOrionTekBackEnd_HostAddress}}/api/addresses/client/1
+Accept: application/json
+
+###
+
+# Addresses - create
+POST {{ClientesOrionTekBackEnd_HostAddress}}/api/addresses
+Accept: application/json
+Content-Type: application/json
+
+{
+  "ClientId": 1,
+  "Street": "Calle Falsa",
+  "City": "Ciudad",
+  "Sector": "Centro",
+  "HouseNumber": "123"
+}
+###
+
+# Addresses - update
+PUT {{ClientesOrionTekBackEnd_HostAddress}}/api/addresses/1
+Accept: application/json
+Content-Type: application/json
+
+{
+  "Street": "Calle Nueva",
+  "City": "Ciudad",
+  "Sector": "Norte",
+  "HouseNumber": "456"
+}
+###
+
+# Addresses - delete
+DELETE {{ClientesOrionTekBackEnd_HostAddress}}/api/addresses/1
+Accept: application/json
+
+###
